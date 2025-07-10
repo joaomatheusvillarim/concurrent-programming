@@ -13,16 +13,99 @@ Puzzle: Use semaphores to enforce these constraints, while allowing readers and 
 #shared variables
 inode = Inode()
 mutex = Semaphore(1)
+readers = 0
+roomEmpty = Semaphore(1)
 ```
 
 ```python
 #reader
-read(inode) #critical section
+mutex.wait()
+readers += 1
+if readers == 1:
+  roomEmpty.wait() #first in locks the room
+mutex.signal()
+
+data = inode.read() #critical section
+
+mutex.wait()
+readers -= 1
+if readers == 0:
+  roomEmpty.signal() #last out unlocks the room
+mutex.signal()
 ```
 
 ```python
 #writer
-mutex.wait()
+roomEmpty.wait()
 inode.write(data) #critical section
-mutex.signal()
+roomEmpty.signal()
+```
+
+## implementing lightswitch as a class
+```python
+#definition
+class Lightswitch:
+  def __init__(self):
+    self.count = 0
+    self.mutex = Semaphore(1)
+
+  def lock(self, semaphore):
+    self.mutex.wait()
+    count += 1
+    if count == 1:
+      semaphore.wait()
+    mutex.signal()
+
+  def unlock(self, semaphore):
+    self.mutex.wait()
+    count -= 1
+    if count == 0:
+      semaphore.signal()
+    self.mutex.signal()
+```
+
+```python
+#shared variables
+reader_lightswitch = Lightswitch()
+roomEmpty = Semaphore(1)
+```
+
+```python
+#reader
+reader_lightswitch.lock(roomEmpty)
+data = inode.read()
+reader_lightswitch.unlock(roomEmpty)
+```
+
+```python
+#writer
+roomEmpty.wait()
+inode.write(data)
+roomEmpty.signal()
+```
+
+## solving starvation
+"If a writer arrives while there are readers in the critical section, it might wait in queue forever while readers come and go. As long as a new reader arrives before the last of the current readers departs, there will always be at least one reader in the room."
+```python
+#shared variables
+reader_lightswitch = Lightswitch()
+roomEmpty = Semaphore(1)
+turnstile = Semaphore(1)
+```
+```python
+#reader
+turnstile.wait()
+turnstile.signal()
+
+reader_lightswitch.lock(roomEmpty)
+data = inode.read() #critical section
+reader_lightswitch.unlock(roomEmpty)
+```
+```python
+#writer
+turnstile.wait()
+roomEmpty.wait()
+inode.write(data) #critical section
+turnstile.signal()
+roomEmpty.signal()
 ```

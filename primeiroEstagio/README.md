@@ -179,6 +179,8 @@ turnstile2.wait()
 turnstile2.signal()
 ```
 
+## classical synchronization problems
+
 ### producer-consumer
 ```python
 #shared variables
@@ -207,4 +209,47 @@ mutex.signal()
 full.signal() #echoing that buffer is not full
 ```
 
-### reader-writer
+### reader-writer (or lightswitch)
+```python
+#shared variables
+inode = Inode()
+mutex = Semaphore(1)
+readers = 0
+roomEmpty = Semaphore(1)
+```
+
+```python
+#reader
+mutex.wait()
+readers += 1
+if readers == 1:
+  roomEmpty.wait() #first in locks the room
+mutex.signal()
+
+read(inode) #critical section
+
+mutex.wait()
+readers -= 1
+if readers == 0:
+  roomEmpty.signal() #last out unlocks the room
+mutex.signal()
+```
+
+```python
+#writer
+roomEmpty.wait()
+inode.write(data) #critical section
+roomEmpty.signal()
+```
+
+## summary
+- signaling: simplest pattern;
+- rendezvous: bilateral signaling;
+- mutex: to protect critical sections;
+- multiplex: generalization of mutex;
+- barrier: everyone but the n-nth thread blocks before signaling, the n-nth thread signals, then blocks, then signals again while everyone unblocks each other;
+- turnstile: two-phase barrier where the n-nth thread locks the following phase right before unlocking the current phase;
+- producer-consumer: producers check if the buffer is full before adding and echo that is not empty after; consumers check if the buffer is empty before getting and echo that is not full after;
+- reader-writer: first in locks the room, last out unlocks the room; can use a turnstile to avoid starvation between writers.
+
+i sent the following prompt to gemini 2.5 pro: "i'm studying for a concurrent programming exam. write a python script in which i need to implement the classes Barrier, Turnstile and Lightswitch and everything else is already written so I can test the correctness of my implementation" and got [gemini-template.py](gemini-template.py) as a result. my implementations are [here](my-implementations.py). 
