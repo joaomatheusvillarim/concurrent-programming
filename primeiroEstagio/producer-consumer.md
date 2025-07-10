@@ -40,7 +40,7 @@ full = semaphore(size)
 data = produce()
 full.wait() #checking if buffer is not full before adding onto it
 mutex.wait() #controls access to buffer
-buffer.put(data) #critical region
+buffer.put(data) #critical section
 mutex.signal()
 empty.signal() #echoing that buffer is not empty
 ```
@@ -49,7 +49,7 @@ empty.signal() #echoing that buffer is not empty
 #consumer
 empty.wait() #checking if buffer is not empty before retrieving from it
 mutex.wait() #controls access to buffer
-data = buffer.get() #critical region
+data = buffer.get() #critical section
 mutex.signal()
 full.signal() #echoing that buffer is not full
 ```

@@ -17,12 +17,12 @@ mutex = Semaphore(1)
 
 ```python
 #reader
-read(inode) #critical region
+read(inode) #critical section
 ```
 
 ```python
 #writer
 mutex.wait()
-inode.write(data) #critical region
+inode.write(data) #critical section
 mutex.signal()
 ```
