@@ -1,4 +1,4 @@
-# producer-writer
+# producer-consumer
 
 ## the little book of semaphores
 "In multithreaded programs there is often a division of labor between threads. In one common pattern, some threads are producers and some are consumers. Producers create items of some kind and add them to a data structure; consumers remove the items and process them.  
