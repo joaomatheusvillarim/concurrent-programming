@@ -133,10 +133,9 @@ prepare()
 
 mutex.wait()
 count += 1
-mutex.signal()
-
 if count == n:
   barrier.signal()
+mutex.signal()
 
 barrier.wait()
 barrier.signal()
@@ -148,8 +147,36 @@ run()
 consider that the previous code is running on a loop for each thread, and we'd like to guarantee that the barrier is reusable, i.e. it unblocks every time all n threads are done with prepare().
 ```python
 #shared variables
+turnstile = Semaphore(0)
+turnstile2 = Semaphore(1)
+count = 0
+mutex = Semaphore(1)
 ```
 ```python
+#threads a, b, ..., n
+prepare()
+
+mutex.wait()
+count += 1
+if count == n:
+  turnstile2.wait() #locks the second turnstile
+  turnstile.signal() #unlocks the first turnstile
+mutex.signal()
+
+turnstile.wait()
+turnstile.signal()
+
+run()
+
+mutex.wait()
+count -= 1
+if count == 0:
+  turnstile.wait() #locks the first turnstile
+  turnstile2.signal() #unlocks the second turnstile
+mutex.signal()
+
+turnstile2.wait()
+turnstile2.signal()
 ```
 
 ### producer-consumer

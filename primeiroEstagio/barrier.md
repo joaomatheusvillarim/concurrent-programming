@@ -25,13 +25,13 @@ prepare() #rendezvous
 
 mutex.wait()
 count += 1
-mutex.signal()
-
 if count == n:
   barrier.signal()
+mutex.signal()
 
 barrier.wait()
 barrier.signal()
 
 run() #critical point
 ```
+you may notice that the if statement is inside the section protected by the mutex, that is to ensure only one thread executes it with count equal to n.
