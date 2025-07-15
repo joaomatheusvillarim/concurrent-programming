@@ -1,0 +1,44 @@
+Aluno: João Matheus Pinto Villarim Coutinho de Almeida
+Matrícula: 121110386
+---------------------------------------------------------------------------------------
+Questão 1:
+public int main(int n) {
+    //para o retorno
+    int max = Integer.MIN;
+    int min = Integer.MAX;
+    Semaphore mutex2 = new Semaphore(1);
+
+    //para a barreira
+    int count = 0;
+    Semaphore mutex = new Semaphore(1);
+    Semaphore barrier = new Semaphore(0);
+
+    //criação de threads
+    for (int i = 0; i < n; i++) {
+        create_thread(foo());
+    }
+
+    //barreira
+    mutex.wait();
+    count++;
+    if (count == n) barrier.signal();
+    mutex.signal();
+
+    barrier.wait();
+    barrier.signal();
+
+    return min + max; //região crítica
+}
+
+public void foo() {
+    int number = rand();
+    mutex2.wait();
+    //região crítica
+    if (number > maior) {
+        maior = number;
+    } else if (number < menor) {
+        menor = number;
+    }
+    mutex2.signal();
+    sleep(number);
+}

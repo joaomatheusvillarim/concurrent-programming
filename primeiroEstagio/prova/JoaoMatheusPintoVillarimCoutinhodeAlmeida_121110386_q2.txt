@@ -1,0 +1,34 @@
+Aluno: João Matheus Pinto Villarim Coutinho de Almeida
+Matrícula: 121110386
+---------------------------------------------------------------------------------------
+Questão 2:
+Nesta implementação, o buffer começa com m itens.
+
+//variáveis globais
+Semaphore mutex = Semaphore(1);
+int count = m;
+Semaphore canGet = Semaphore(m);
+Semaphore mustRefill = Semaphore(0);
+
+func compute() {
+    while (true) {
+        canGet.wait();
+        mutex.wait();
+        Job j = getJob(); //região crítica
+        count--;
+        if (count == 0) mustRefill.signal();
+        mutex.signal();
+        exec(j);
+    }
+}
+
+func manage() {
+    while (true) {
+        mustRefill.wait();
+        mutex.wait();
+        create_jobs(m); //região crítica
+        count = m;
+        mutex.signal();
+        canGet.signal();
+    }
+}

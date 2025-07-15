@@ -1,0 +1,44 @@
+Aluno: João Matheus Pinto Villarim Coutinho de Almeida
+Matrícula: 121110386
+---------------------------------------------------------------------------------------
+Questão 3:
+#variáveis globais
+reader_switch = Lightswitch()
+mutex = Semaphore(1)
+count = 0
+
+class Lightswitch:
+    def __init__(self):
+        self.mutex = Semaphore(1)
+    
+    def lock(self, semaphore):
+        self.mutex.wait()
+        semaphore.wait()
+        self.mutex.signal()
+
+    def unlock(self, semaphore):
+        self.mutex.wait()
+        semaphore.signal()
+        self.mutex.signal()
+
+def safe_lookup():
+    mutex.wait()
+    count += 1
+    if count == 1: #o primeiro a entrar fecha
+        reader_switch.lock(emptyRoom)
+    mutex.signal()
+
+    lookup(config_key) #região crítica
+
+    mutex.wait()
+    count -= 1
+    if count == 0: #o último a sair fecha
+        reader_switch.unlock(emptyRoom)
+    mutex.signal()
+
+def safe_update():
+    emptyRoom.wait()
+    mutex.wait()
+    update(config_key, new_value)
+    mutex.signal()
+    emptyRoom.signal()
