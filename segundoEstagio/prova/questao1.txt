@@ -1,0 +1,27 @@
+public class ThreadSafeCounter {
+
+    private AtomicInteger counter = new AtomicInteger(0);
+
+    public void increment() {
+        this.counter.incrementAndGet();
+    }
+
+    public void decrement() {
+        this.counter.decrementAndGet();
+    }
+
+    public void reset() {
+        this.counter.set(0);
+    }
+
+    public void getValue() {
+        return this.counter.get();
+    }
+
+    public boolean addIfPositive(int value) {
+        return this.counter.compareAndSet(
+            expect = Math.abs(this.counter.get()),
+            update = this.counter.copy().addAndGet(value)
+        );
+    }
+}

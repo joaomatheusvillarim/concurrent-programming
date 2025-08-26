@@ -1,0 +1,38 @@
+(i) LockOne:
+
+Considerando a implementação deste algoritmo, podemos denotar a ordem de eventos para duas threads A e B como:
+
+(eq.1) writeA(flag[A]=true) -> readA(flag[B]==false) -> RCA
+(eq.2) writeB(flag[B]=true) -> readB(flag[A]==false) -> RCB
+
+onde RCA e RCB são intervalos nos quais A e B executam suas regiões críticas, respectivamente.
+
+Caso o compilador reordene as intruções de modo que a ordem de eventos de B torne-se:
+
+(eq.3) readB(flag[A]==false) -> writeB(flag[B]=true) -> RCB
+
+uma possível execução concorrente seria:
+
+(eq.4) readB(flag[A]==false) -> writeA(flag[A]=true) -> readA(flag[B]==false) -> writeB(flag[B]=true)
+
+fazendo com que A e B executem suas regiões críticas simultaneamente, e assim ferindo o princípio de exclusão mútua.
+---------------------------------------
+
+(ii) LockTwo:
+
+Considerando a implementação deste algoritmo, podemos denotar a ordem de eventos para duas threads A e B como:
+
+(eq.1) writeA(victim=A) -> readA(victim==B) -> RCA
+(eq.2) writeB(victim=B) -> readB(victim==A) -> RCB
+
+onde RCA e RCB são intervalos nos quais A e B executam suas regiões críticas, respectivamente.
+
+Caso o compilador reordene as intruções de modo que a ordem de eventos de B torne-se:
+
+(eq.3) readB(victim==A) -> writeB(victim=B) -> RCB
+
+uma possível execução concorrente seria:
+
+(eq.4) writeA(victim=A) -> readB(victim==A) -> writeB(victim=B) -> readA(victim==B)
+
+fazendo com que A e B executem suas regiões críticas simultaneamente, e assim ferindo o princípio de exclusão mútua.
